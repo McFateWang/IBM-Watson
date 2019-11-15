@@ -85,10 +85,14 @@ app.post('/api/message', function (req, res) {
 		console.log(' ==================================== ');
 		// 文本分析子程序
 		var wjNLU = require('./wj_nlu');
+
+		// 处理异步
 		var q = new Promise(function (resolve, reject) {
 			var results = wjNLU.showNLU(userArea, textIn); // 该函数需要同步执行
-		})
-		q.then(function () {
+			resolve(results);
+		});
+
+		q.then(function ( results ) {
 			console.log('文本分析结果： ', JSON.stringify(results, null, 2));
 			console.log(' ==================================== ');
 			functionTag = '聊天'; //重置
@@ -96,8 +100,6 @@ app.post('/api/message', function (req, res) {
 		}, function (err) {
 			console.log('出现错误');
 		})
-		
-		
 	}
 
 	// 识别用户输入
