@@ -1,0 +1,24 @@
+.wj-chat-column-holder {
+    background-image: url('../img/earth.png');
+    background-size: contain;
+    background-attachment: fixed;
+    background-position: left top;
+    background-repeat: no-repeat;
+}
+
+.wj-header-holder {
+    height: 9%;
+    background-color: rgba(180, 180, 180, 0.3);
+    text-align: left;
+    font-family: 'Microsoft YaHei';
+    padding: 10px;
+    color: white;
+}
+
+.wj-header {
+    font-size: 30px;
+}
+
+.wj-p {
+    font-size: 20px;
+}
