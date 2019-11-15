@@ -33,6 +33,19 @@ var rule = {
 
 }
 
+// 报错信息
+var botError = {
+    'output': {
+        'generic': [
+            {
+                'response_type': 'text',
+                'text': '很抱歉，文本分析无法识别。请重新输入~'
+            }
+        ]
+    },
+    'tag': 'finish'
+};
+
 // 核心函数
 function showNLU(userArea, userText) {
     console.log('执行 ', userArea, ' 地区用户的文本分析：', userText);
@@ -62,7 +75,7 @@ function showNLU(userArea, userText) {
     nlu.analyze(analyzeParams, (err, results) => {
         if (err) {
             console.log('文本分析异常....\n', err);
-            return false;
+            return botError;
         }
         else {
             // 处理输出文本
@@ -70,17 +83,19 @@ function showNLU(userArea, userText) {
             var entities = results.result.entities;
             var response = '';
 
-            console.log('what', entities);
+            console.log('entities', entities);
 
             if(entities == []){
                 console.log('文本分析返回为空....\n');
+                return botError;
             }
             else{
                 // 依次提取 物品+地区下分类名称
                 entities.map( (value) => {
-                    response = response + value['text'] + '--' + value['type'];
+                    response = response + value['text'] + '--' + rule[userArea][value['type']] + ' ';
                 })
                 console.log(response);
+                console.log('nlu使用完成...');
                 // 打包成 assistant 的格式
                 var botMessage = {
                     'output': {
@@ -90,7 +105,8 @@ function showNLU(userArea, userText) {
                                 'text': response
                             }
                         ]
-                    }
+                    },
+                    'tag': 'finish'
                 };
                 return botMessage;
             }

@@ -37,11 +37,11 @@ var userArea = '未设定';
 var functionTag = '聊天';
 
 // test
-var wjNLU = require('./wj_nlu');
-var userText ='塑料电池药品剩菜打火机纸张';
-userArea = '上海';
-var results = wjNLU.showNLU(userArea, userText);
-console.log('results: ', results);
+// var wjNLU = require('./wj_nlu');
+// var userText ='塑料 电池 果皮';
+// userArea = '上海';
+// var results = wjNLU.showNLU(userArea, userText);
+// console.log('results: ', results);
 
 // 接收前端的req，发送到assistant，收到信息后，res发给前端
 // Endpoint to be call from the client side
@@ -72,20 +72,32 @@ app.post('/api/message', function (req, res) {
 	};
 
 	// 当用户上一次发起子功能，本次执行子功能
+
+	// 图像识别模块
 	if ( functionTag === '图像识别' ) {
 		console.log('正在处理图像识别.......')
 		// 图像识别子程序
 		functionTag = '聊天'; //重置
 	}
+
+	// 文本分析模块
 	else if ( functionTag === '文本分析' ) {
 		console.log(' ==================================== ');
 		// 文本分析子程序
 		var wjNLU = require('./wj_nlu');
-		var results = wjNLU.showNLU(userArea, userText ); // 该函数需要同步执行
-		console.log(JSON.stringify(results, null, 2));
-		console.log(' ==================================== ');
-		// end
-		functionTag = '聊天'; //重置
+		var q = new Promise(function (resolve, reject) {
+			var results = wjNLU.showNLU(userArea, textIn); // 该函数需要同步执行
+		})
+		q.then(function () {
+			console.log('文本分析结果： ', JSON.stringify(results, null, 2));
+			console.log(' ==================================== ');
+			functionTag = '聊天'; //重置
+			return res.json(results);
+		}, function (err) {
+			console.log('出现错误');
+		})
+		
+		
 	}
 
 	// 识别用户输入
@@ -138,4 +150,3 @@ app.get('/api/session', function (req, res) {
 });
 
 module.exports = app;
-
