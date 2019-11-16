@@ -1,5 +1,6 @@
 .wj-chat-column-holder {
     background-image: url('../img/earth.png');
+    /*background-image: url('../../contour.jpg');  */
     background-size: contain;
     background-attachment: fixed;
     background-position: left top;
