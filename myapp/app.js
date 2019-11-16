@@ -10,7 +10,8 @@ var express = require('express'); // app server
 var bodyParser = require('body-parser'); // parser for post requests
 var AssistantV2 = require('ibm-watson/assistant/v2'); // watson sdk
 const { IamAuthenticator } = require('ibm-watson/auth');
-var ImageRecognition = require('./Image_Recognition')
+var ImageRecognition = require('./Image_Recognition');
+var wjNLU = require('./wj_nlu');
 // 使用nodejs express框架
 var app = express();
 
@@ -76,35 +77,27 @@ app.post('/api/message', async function (req, res) {
 	if ( functionTag === '图像识别' ) {
 		console.log('正在处理图像识别.......')
 		// 图像识别子程序
-		functionTag = '聊天'; //重置
-
-		var defaultImgPath = './img4.jpg';
-
-		await ImageRecognition.ImageRecognition(defaultImgPath)
-		.then((result)=>{
-			var message = 
-			 {
-			 	 result : {
-            output: {
-                generic: [
-                    {
-                        response_type: 'image',
-                        source: '../../contour.jpg'
-                    },
-                ]
-            }
-        }
-}
-		console.log( '图像results: ', message);
-			return res.json(message);
+		var defaultImgPath = './public/img4.jpg';
+		var resultsPromise = ImageRecognition.ImageRecognition(defaultImgPath,userArea);
+		res = await resultsPromise.then((results)=>{
+			// 正确调用重置标记，否则下次输入仍然文本分析
+			console.log('获取result： ', JSON.stringify(results, null, 2));
+			if (results['state'] === 'success') {
+				console.log('文本分析服务成功');
+				functionTag = '聊天'; //重置
+			}
+			else {
+				console.log('文本分析服务调用失败....');
+			}
+			console.log(' ==================================== \n');
+			return res.json(results);			
 		})
+		return res;
 	}
 
 	// 文本分析模块
 	else if ( functionTag === '文本分析' ) {
 		console.log(' \n ==================================== ');
-		// 加载 文本分析子程序
-		var wjNLU = require('./wj_nlu');
 		// 处理异步问题
 		var resultsPromise = wjNLU.showNLU(userArea, textIn); // 该函数需要同步执行
 		res = await resultsPromise.then((results)=> {
