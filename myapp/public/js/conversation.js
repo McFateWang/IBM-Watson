@@ -129,6 +129,8 @@ var ConversationPanel = (function () {
 	// 展示文本的主函数
 	// Display a user or Watson message that has just been sent/received
 	function displayMessage(newPayload, typeValue) {
+		console.log('output:',newPayload, typeValue);
+
 		var isUser = isUserMessage(typeValue);
 		//var textExists = newPayload.generic;
 		if ((newPayload.output && newPayload.output.generic) || newPayload.input) {

@@ -43,7 +43,6 @@ var botError = {
             }
         ]
     },
-    'tag': 'finish'
 };
 
 // 核心函数
@@ -55,13 +54,25 @@ function showNLU(userArea, userText) {
         'text': userText,
         'features': {
             'entities': {
-                'model': '2fb8102d-ef8f-4546-8bc8-3fab741dce14',
+                'model': '24bac64e-a450-4759-91eb-ccab44510f12',
                 'limit': 50,
             }
         }
     };
     console.log('输入打包:', JSON.stringify(analyzeParams, null, 2));
-
+    // var botMessage = {
+    //             result : {
+    //                 output: {
+    //                     generic: [
+    //                         {
+    //                             response_type: 'text',
+    //                             text: '废荧光灯管--有害垃圾 废灯管--有害垃圾 废药品--有害垃圾 废电池--有害垃圾 废油漆--有害垃圾 杀虫剂--有害垃圾 墨盒--有害垃圾 蓄电池--有害垃圾'
+    //                         }
+    //                             ]
+    //                         },
+    //                     }
+    //             };
+    // return botMessage;
     // 打印模型查看
     // nlu.listModels()
     //     .then(listModelsResults => {
@@ -73,6 +84,22 @@ function showNLU(userArea, userText) {
 
     // 使用analyze功能
     nlu.analyze(analyzeParams, (err, results) => {
+ var botMessage = {
+                result : {
+                    output: {
+                        generic: [
+                            {
+                                response_type: 'text',
+                                text: '废荧光灯管--有害垃圾 废灯管--有害垃圾 废药品--有害垃圾 废电池--有害垃圾 废油漆--有害垃圾 杀虫剂--有害垃圾 墨盒--有害垃圾 蓄电池--有害垃圾'
+                            }
+                                ]
+                            },
+                        }
+                };
+    return botMessage;
+
+
+        
         if (err) {
             console.log('文本分析异常....\n', err);
             return botError;
@@ -97,16 +124,17 @@ function showNLU(userArea, userText) {
                 console.log(response);
                 console.log('nlu使用完成...');
                 // 打包成 assistant 的格式
-                var botMessage = {
-                    'output': {
-                        'generic': [
+               var botMessage = {
+                result : {
+                    output: {
+                        generic: [
                             {
-                                'response_type': 'text',
-                                'text': response
+                                response_type: 'text',
+                                text: '废荧光灯管--有害垃圾 废灯管--有害垃圾 废药品--有害垃圾 废电池--有害垃圾 废油漆--有害垃圾 杀虫剂--有害垃圾 墨盒--有害垃圾 蓄电池--有害垃圾'
                             }
-                        ]
-                    },
-                    'tag': 'finish'
+                                ]
+                            },
+                        }
                 };
                 return botMessage;
             }
