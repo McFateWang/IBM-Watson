@@ -1,5 +1,6 @@
 // *
 // 后端主程序 - 提供和assistant的连接，和前端通信的url
+// 实现调用其他服务
 // *
 
 'use strict';
@@ -14,15 +15,14 @@ const { IamAuthenticator } = require('ibm-watson/auth');
 var app = express();
 
 // express设置静态资源文件目录
-// 使用bodyparserk库做json解析
-// Bootstrap application settings
 app.use(express.static('./public')); // load UI from public folder
-app.use(bodyParser.json());
+app.use(bodyParser.json()); // 使用bodyparserk库做json解析
 
 // 创建 assistant 服务连接
 // Create the service wrapper
-console.log('\n※※※※※※※※※※※※※※※※')
-console.log('创建assistant服务...\n');
+console.log('---------------------------\n ');
+console.log('----  服务启动中...  ------\n');
+console.log('---------------------------\n ');
 
 var assistant = new AssistantV2({
 	version: '2019-02-28',
@@ -32,26 +32,23 @@ var assistant = new AssistantV2({
 	url: process.env.ASSISTANT_URL,
 });
 
-// 后端的一些标记
+// 后端的一些标记变量
 var userArea = '未设定';
 var functionTag = '聊天';
 
-// test
-// var wjNLU = require('./wj_nlu');
-// var userText ='塑料 电池 果皮';
-// userArea = '上海';
-// var results = wjNLU.showNLU(userArea, userText);
-// console.log('results: ', results);
 
 // 接收前端的req，发送到assistant，收到信息后，res发给前端
 // Endpoint to be call from the client side
-app.post('/api/message', function (req, res) {
-	let assistantId = process.env.ASSISTANT_ID || '<assistant-id>';  // 通过dontenv找到预先设定的环境变量，就是.env文件
+
+app.post('/api/message', async function (req, res) {
+	// ----------------- 处理req ------------------	
+	 // 通过dontenv找到预先设定的环境变量，就是.env文件
+	let assistantId = process.env.ASSISTANT_ID || '<assistant-id>'; 
 	if (!assistantId || assistantId === '<assistant-id>') {
 		return res.json({
 			output: {
 				text:
-					'The app has not been configured with a <b>ASSISTANT_ID</b> environment variable.',
+					'<b>ASSISTANT_ID</b>没有设定！',
 			},
 		});
 	}
@@ -61,7 +58,8 @@ app.post('/api/message', function (req, res) {
 	if (req.body.input) {
 		textIn = req.body.input.text;
 	}
-	// payload负荷：对话id和input信息（指定text类型）
+
+	// 打包输入 payload负荷：对话id和input信息（指定text类型）
 	var payload = {
 		assistantId: assistantId,
 		sessionId: req.body.session_id,
@@ -71,7 +69,8 @@ app.post('/api/message', function (req, res) {
 		},
 	};
 
-	// 当用户上一次发起子功能，本次执行子功能
+	// ----------------- 调用子功能 ------------------
+	// 当用户上一次发起子功能后，检查标记，本次post执行子功能
 
 	// 图像识别模块
 	if ( functionTag === '图像识别' ) {
@@ -82,25 +81,29 @@ app.post('/api/message', function (req, res) {
 
 	// 文本分析模块
 	else if ( functionTag === '文本分析' ) {
-		console.log(' ==================================== ');
-		// 文本分析子程序
+		console.log(' \n ==================================== ');
+		// 加载 文本分析子程序
 		var wjNLU = require('./wj_nlu');
-		// return res.json(wjNLU.showNLU(userArea, textIn))
-		// 处理异步
-		new Promise(function (resolve, reject) {
-			var results = wjNLU.showNLU(userArea, textIn); // 该函数需要同步执行
-			return results;
-		}).then(function ( results ) {
-			console.log('文本分析结果： ', JSON.stringify(results, null, 2));
-			console.log(' ==================================== ');
-			functionTag = '聊天'; //重置
-			return res.json(results);
-		}, function (err) {
-			console.log('出现错误');
+		// 处理异步问题
+		var resultsPromise = wjNLU.showNLU(userArea, textIn); // 该函数需要同步执行
+		res = await resultsPromise.then((results)=> {
+			// 正确调用重置标记，否则下次输入仍然文本分析
+			console.log('获取result： ', JSON.stringify(results, null, 2));
+			if (results['state'] === 'success') {
+				console.log('文本分析服务成功');
+				functionTag = '聊天'; //重置
+			}
+			else {
+				console.log('文本分析服务调用失败....');
+			}
+			console.log(' ==================================== \n');
+			return res.json(results);			
 		})
+		return res;
 	}
 
-	// 识别用户输入
+	// ----------------- 记录标记 --------------------
+
 	console.log('\n****************************\n');
 	console.log('识别用户message中:  ', textIn);
 	switch ( textIn ) {
@@ -117,7 +120,8 @@ app.post('/api/message', function (req, res) {
 	console.log('当前用户地区： ', userArea,  '  当前功能:  ', functionTag);
 	console.log('\n****************************\n');
 
-	// message操作向assistant发送输入
+	// ----------------- 和assistant交流 --------------------	
+
 	// Send the input to the assistant service
 	assistant.message(payload, function (err, data) {
 		if (err) {
@@ -130,7 +134,9 @@ app.post('/api/message', function (req, res) {
 	});
 });
 
+
 // 创建对话，只执行一次，没有req，返回res搭配前端
+
 app.get('/api/session', function (req, res) {
 	assistant.createSession(
 		{
