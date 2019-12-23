@@ -13,3 +13,9 @@
 - IBM 文本分析
 - IBM 图像识别
 
+# 框架
+- 前端：纯H+C+J
+- 后端：Node.js + Python脚本
+
+# 系统预览
+![system](system.png)
