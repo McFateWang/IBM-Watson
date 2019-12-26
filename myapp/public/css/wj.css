@@ -1,10 +1,11 @@
 .wj-chat-column-holder {
-    background-image: url('../img/earth.png');
+    /* background-image: url('../img/earth.png'); */
+    background-color: black;
     /*background-image: url('../../contour.jpg');  */
-    background-size: contain;
+    /* background-size: 100% 100%;
     background-attachment: fixed;
-    background-position: left top;
-    background-repeat: no-repeat;
+    background-position: center;
+    background-repeat: no-repeat; */
 }
 
 .wj-header-holder {

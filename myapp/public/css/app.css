@@ -92,7 +92,9 @@ div {
   font-family: Helvetica Neue for IBM, Helvetica Neue, Helvetica, Arial, sans-serif;
 }
 
+/* 聊天背景 */
 #scrollingChat {
+  background-color: rgb(245,245,245);
   margin: 0.75rem;
   overflow-y: auto;
   overflow-x: hidden;
@@ -128,13 +130,16 @@ div {
   text-align: right;
 }
 
+/* 用户输入对话框 */
 .from-user .message-inner {
   position: relative;
   font-size: 1rem;
-  color: #fff;
+  /* color: #fff; */
+  color: #000;
   letter-spacing: 0.015rem;
   line-height: 1.3125rem;
-  background: #00B4A0;
+  /* background: #00B4A0; */
+  background: rgb(158, 234, 106);
   border-radius: 1.25rem;
   border-bottom-right-radius: 0;
   text-align: left;
@@ -173,7 +178,28 @@ div {
   border-top-right-radius: 1.25rem;
 }
 
-.from-watson, 
+/* watson输入框样式 */
+.from-watson,
+.message-inner {
+  position: relative;
+  font-size: 1rem;
+  /* color: #fff; */
+  color: #000;
+  letter-spacing: 0.015rem;
+  line-height: 1.3125rem;
+  /* background: #00B4A0; */
+  background: #fff;
+  border-radius: 1.25rem;
+  border-bottom-right-radius: 0;
+  text-align: left;
+  display: inline-block;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  margin-top: 0.5rem;
+  min-width: 2.5rem;
+}
+
+/* .from-watson, 
 .message-inner {
   position: relative;
   border-radius: 1.5625rem;
@@ -181,7 +207,7 @@ div {
   color: #B5B5B5;
   letter-spacing: 0.015rem;
   line-height: 1.3125rem;
-}
+} */
 
 .from-watson.latest .message-inner {
   color: #323232;
@@ -218,7 +244,6 @@ div {
   padding-left: 0.125rem;
   margin-bottom: -0.125rem;
   font-family: Helvetica Neue for IBM, Helvetica Neue, Helvetica, Arial, sans-serif;
-
 }
 
 #textInput.underline {
