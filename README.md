@@ -3,6 +3,10 @@
 - 为zju人工智能的课程作业之一
 - 整体为一个垃圾分类小助手
 
+# 配置
+- npm i
+- ibm-watson下载不稳定的话，可能要单独去下载
+
 # 启动
 - cd myapp
 - npm start
