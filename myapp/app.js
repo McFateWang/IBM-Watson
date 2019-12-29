@@ -80,14 +80,14 @@ app.post('/api/message', async function (req, res) {
 		var defaultImgPath = './public/img4.jpg';
 		var resultsPromise = ImageRecognition.ImageRecognition(defaultImgPath,userArea);
 		res = await resultsPromise.then((results)=>{
-			// 正确调用重置标记，否则下次输入仍然文本分析
+			// 正确调用重置标记，否则下次输入仍然图像分析
 			console.log('获取result： ', JSON.stringify(results, null, 2));
 			if (results['state'] === 'success') {
-				console.log('文本分析服务成功');
+				console.log('图像分析服务成功');
 				functionTag = '聊天'; //重置
 			}
 			else {
-				console.log('文本分析服务调用失败....');
+				console.log('图像分析服务调用失败....');
 			}
 			console.log(' ==================================== \n');
 			return res.json(results);			
